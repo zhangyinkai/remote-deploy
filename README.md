@@ -7,7 +7,7 @@ centos,java,tomcat,svn
 ## 命令集合
 cd,mkdir,tar,lsof,grep,awk,ps,kill,rm,unzip
 
-#使用
+# 使用
 ## 集成Idea插件（External tools）
 配置例子：java -jar remote-deploy.jar svnpath=$ModuleFileDir$ classpath=$OutputPath$
 ## bat运行
