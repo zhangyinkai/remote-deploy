@@ -98,7 +98,6 @@ public class PackUtil {
      */
     private static void findFile(String[] arr){
         // 创建root目录
-        rootPath = classPath.substring(0,classPath.length()-1)+"-temp\\"+(new SimpleDateFormat("yyyyMMddHHmmss").format(new Date()))+"\\"+appName;
         String originPath = arr[1];
         if(arr[0].equalsIgnoreCase("D")){
             LogUtil.print(LogType.INFO,"<== skip D");
@@ -171,9 +170,10 @@ public class PackUtil {
             InputStreamReader reader = new InputStreamReader(in);
              br = new BufferedReader(reader);
             String message;
-
+            rootPath = classPath.substring(0,classPath.length()-1)+"-temp\\"+(new SimpleDateFormat("yyyyMMddHHmmss").format(new Date()))+"\\"+appName;
             while((message = br.readLine()) != null) {
                 LogUtil.print(LogType.INFO,"==>"+message);
+                if(message.length()==0||message.indexOf("---")!=-1) continue;
                 b=false;
                 String[] arr = message.trim().replaceAll("\\s{1,}", " ").split(" ");
                 findFile(arr);
@@ -204,14 +204,25 @@ public class PackUtil {
     private static String  buildSVNCmd() throws Exception{
         LogUtil.print(LogType.DEBUG,"================构造执行SVN命令 开始================");
         if(classPath==null||classPath.trim().isEmpty()) throw new Exception("classPath 是必须配置的~");
-        StringBuilder sb = new StringBuilder("svn diff");
-        if(upperVersion!=null&&!upperVersion.trim().isEmpty()){
-            sb.append(" -r ").append(currentVersion).append(":").append(upperVersion.trim());
+        String changeList =  ParamUtil.param.getProperty("changeList");
+        StringBuilder sb;
+        if(changeList!=null&&changeList.trim().length()>0){
+            sb = new StringBuilder("svn st");
+            if(svnPath!=null&&!svnPath.trim().isEmpty()){
+                sb.append(" "+svnPath.trim());
+            }
+            sb.append(" --cl "+changeList);
+        }else{
+            sb = new StringBuilder("svn diff");
+            if(upperVersion!=null&&!upperVersion.trim().isEmpty()){
+                sb.append(" -r ").append(currentVersion).append(":").append(upperVersion.trim());
+            }
+            if(svnPath!=null&&!svnPath.trim().isEmpty()){
+                sb.append(" "+svnPath.trim());
+            }
+            sb.append(" --summarize");
         }
-        if(svnPath!=null&&!svnPath.trim().isEmpty()){
-            sb.append(" "+svnPath.trim());
-        }
-        sb.append(" --summarize");
+
         LogUtil.print(LogType.DEBUG,"构造svn命令："+sb.toString());
         LogUtil.print(LogType.DEBUG,"================构造执行SVN命令 结束================");
         return sb.toString();
