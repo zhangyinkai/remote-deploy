@@ -12,6 +12,7 @@ import java.io.*;
 
 public class SshTemplate {
     private Connection conn;
+    final int timeout = 500;
 
     public SshTemplate(String hostname, String username, String password, int port) {
         try {
@@ -34,7 +35,22 @@ public class SshTemplate {
             br.close();
             result.sysout = sb.toString();
             LogUtil.print(LogType.INFO,"<== 控台打印: " + result.sysout);
-            result.rc = sess.getExitStatus() == null ? 1 : sess.getExitStatus();
+            long c = System.currentTimeMillis();
+            boolean b = true;
+            while (sess.getExitStatus() == null){
+                if(b){
+                    System.out.print("<================================== 等待执行结果:");
+                    b=false;
+                }
+                System.out.print(".");
+                if(System.currentTimeMillis()-c>=timeout){
+                    System.out.println();
+                    LogUtil.print(LogType.ERROR,"<== 获取执行结果超时，请重新尝试执行！");
+                    return false;
+                }
+            };
+            if(!b)System.out.println();
+            result.rc = sess.getExitStatus();
             result.isSuccess = result.rc == 0;
             LogUtil.print(LogType.INFO,"<== 执行结果: " + result.rc + " | " + result.isSuccess);
             return true;

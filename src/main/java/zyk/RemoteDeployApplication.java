@@ -322,6 +322,11 @@ public class RemoteDeployApplication {
         if (!b) {
             throw new Exception("exec check dir error : " + tar_dir);
         } else {
+            String appName = ParamUtil.param.getProperty("app_name");
+            //防止更新文件更多存留   Add*.zip
+            String cleanOldFile = "rm -rf "+tar_dir+appName+"Add*.*";
+            sshTemplate.execCommand(cleanOldFile);
+
             SCPClient scpClient = sshTemplate.createSCPClient();
             String increment_path = ParamUtil.param.getProperty("increment_path");
             File file = new File(increment_path);
