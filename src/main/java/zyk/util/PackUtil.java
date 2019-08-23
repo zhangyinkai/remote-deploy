@@ -175,7 +175,7 @@ public class PackUtil {
                 LogUtil.print(LogType.INFO,"==>"+message);
                 if(message.length()==0||message.indexOf("---")!=-1) continue;
                 b=false;
-                String[] arr = message.trim().replaceAll("\\s{1,}", " ").split(" ");
+                String[] arr = message.trim().replaceAll("\\s\\+\\s","").replaceAll("\\s{1,}", " ").split(" ");
                 findFile(arr);
             }
             if(b) LogUtil.print(LogType.WARN,"没有获取到任何内容");
