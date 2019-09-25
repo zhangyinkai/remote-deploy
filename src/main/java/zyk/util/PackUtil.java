@@ -147,6 +147,14 @@ public class PackUtil {
                 });
             }
 
+        }else if(originPath.indexOf("src\\")!=-1){
+            //类中的文件
+            String fileTemp = originPath.substring(originPath.indexOf("src")+3);
+            String fileOriginPath = classPath+fileTemp;
+            LogUtil.print(LogType.DEBUG,"fileOriginPath = "+fileOriginPath);
+            String filePath = rootPath+"\\WEB-INF\\classes"+fileTemp;
+            LogUtil.print(LogType.DEBUG,"filePath = "+filePath);
+            copyFile(fileOriginPath,filePath);
         }else{
             LogUtil.print(LogType.WARN,"<== skip");
         }
